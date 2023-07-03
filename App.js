@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
   },
   tasksWrapper: {
-    paddingTop: 80,
+    paddingTop: 30,
     paddingHorizontal: 20,
     flex: 1,
   },
