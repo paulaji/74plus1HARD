@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "74+1Hard",
-    "slug": "74+1Hard",
+    "name": "74+1HARD",
+    "slug": "74plus1HARD",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon1.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/iconnew.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,17 +17,17 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.bettercallpaul.seventyfourplusonehard"
+      "package": "bettercallpaul.seventyfourplusonehard"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "a7b6c6d1-d190-4eec-b5c3-032e79670bac"
+        "projectId": "7bcac157-c254-433e-98df-c841926676df"
       }
     }
   }
