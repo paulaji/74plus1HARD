@@ -1,0 +1,3 @@
+created expo app using: npx create-expo-app todo
+starting app using: npx expo start
+color scheme: 
