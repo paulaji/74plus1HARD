@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -12,7 +12,7 @@ import {
   Alert,
   Image,
 } from "react-native";
-// Import your logo image
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import LogoImage from "./assets/iconnewnobg.png";
 
 export default function App() {
@@ -35,24 +35,27 @@ export default function App() {
     ]);
   };
 
-  const completeTask = (index) => {
+  const completeTask = async (index) => {
     const taskCopy = [...taskItems];
     taskCopy[index].completed = true;
     setTaskItems(taskCopy);
+    await AsyncStorage.setItem("taskItems", JSON.stringify(taskCopy));
     checkDayCompletion(taskCopy);
   };
 
-  const checkDayCompletion = (taskList) => {
+  const checkDayCompletion = async (taskList) => {
     const allTasksCompleted = taskList.every((task) => task.completed);
     if (allTasksCompleted) {
       setDayTracker((prevDay) => prevDay + 1);
+      await AsyncStorage.setItem("dayTracker", (dayTracker + 1).toString());
       resetTasks();
     }
   };
 
-  const resetTasks = () => {
+  const resetTasks = async () => {
     const taskCopy = taskItems.map((task) => ({ ...task, completed: false }));
     setTaskItems(taskCopy);
+    await AsyncStorage.setItem("taskItems", JSON.stringify(taskCopy));
   };
 
   const handleResetConfirmation = () => {
@@ -66,9 +69,10 @@ export default function App() {
     );
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     setDayTracker(0);
     resetTasks();
+    await AsyncStorage.removeItem("dayTracker");
   };
 
   const renderTask = (task, index) => {
@@ -86,14 +90,32 @@ export default function App() {
     );
   };
 
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const savedTaskItems = await AsyncStorage.getItem("taskItems");
+        if (savedTaskItems) {
+          setTaskItems(JSON.parse(savedTaskItems));
+        }
+
+        const savedDayTracker = await AsyncStorage.getItem("dayTracker");
+        if (savedDayTracker) {
+          setDayTracker(parseInt(savedDayTracker));
+        }
+      } catch (error) {
+        console.log("Error loading data from AsyncStorage:", error);
+      }
+    };
+
+    loadData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
         <View style={styles.logoContainer}>
-          {/* Display the logo image */}
           <Image source={LogoImage} style={styles.logo} />
         </View>
-        {/* <Text style={styles.sectionTitle}>74+1HARD</Text> */}
         <Text style={styles.sectionSubTitle}>
           Challenge yourself for 75 days and change your life!
         </Text>
@@ -111,7 +133,7 @@ export default function App() {
           onPress={() =>
             Alert.alert(
               "74+1HARD:",
-              "a challenge that lasts for 75 consecutive days. It includes two daily workouts, a strict diet, drinking a gallon of water, reading/learning, no alcohol or cheat meals, and taking a progress picture every day. The challenge aims to test discipline, mental toughness, and commitment to self-improvement."
+              "A challenge that lasts for 75 consecutive days. It includes two daily workouts, a strict diet, drinking a gallon of water, reading/learning, no alcohol or cheat meals, and taking a progress picture every day. The challenge aims to test discipline, mental toughness, and commitment to self-improvement."
             )
           }
         >
@@ -139,25 +161,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logoContainer: {
-    alignItems: "center", // Center the logo horizontally
-    justifyContent: "center", // Center the logo vertically
-    // marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   logo: {
     width: 120,
     height: 120,
     resizeMode: "contain",
   },
-  // sectionTitle: {
-  //   // borderWidth: 1,
-  //   // borderColor: "#FF0000",
-  //   textAlign: "center",
-  //   color: "#191970",
-  //   // backgroundColor: "#000",
-  //   fontSize: 20,
-  //   fontWeight: 400,
-  //   marginBottom: 10,
-  // },
   sectionSubTitle: {
     textAlign: "center",
     color: "#555",
@@ -190,7 +201,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   taskText: {
-    // #01949a #191970
     fontSize: 14,
     fontWeight: 400,
     color: "#191970",
@@ -206,47 +216,76 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: "#01949a",
   },
+  //   dayTrackerText: {
+  //     color: "#01949a",
+  //     borderWidth: 1,
+  //     borderColor: "#191970",
+  //     backgroundColor: "#191970",
+  //     fontSize: 25,
+  //     padding: 3,
+  //     borderRadius: 5,
+  //     fontWeight: "bold",
+  //     // borderColor: "#FFF",
+  //     // borderWidth: 1,
+  //   },
+  //   infoButton: {
+  //     backgroundColor: "#191970",
+  //     paddingVertical: 5,
+  //     paddingHorizontal: 10,
+  //     borderRadius: 5,
+  //     borderColor: "#FFF",
+  //     borderWidth: 1,
+  //   },
+  //   infoButtonText: {
+  //     color: "#01949a",
+  //     fontWeight: "bold",
+  //     fontSize: 12,
+  //   },
+  //   resetButton: {
+  //     backgroundColor: "#191970",
+  //     paddingVertical: 5,
+  //     paddingHorizontal: 10,
+  //     borderRadius: 5,
+  //     borderColor: "#9a0119",
+  //     borderWidth: 1,
+  //   },
+  //   resetButtonText: {
+  //     color: "#01949a",
+  //     fontWeight: "bold",
+  //     fontSize: 12,
+  //   },
   dayTrackerText: {
     color: "#01949a",
-    borderWidth: 1,
-    borderColor: "#191970",
-    backgroundColor: "#191970",
-    fontSize: 22,
+    backgroundColor: "#FFF",
+    fontSize: 25,
     padding: 3,
-    fontWeight: 400,
-    borderRadius: 50,
-    paddingVertical: 0,
-  },
-  resetButton: {
-    padding: 20,
-    borderWidth: 2,
-    borderColor: "#FF0000",
-    // backgroundColor: "#000",
-    // paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 50,
-    backgroundColor: "#191970",
-  },
-  resetButtonText: {
-    color: "#FF0000",
-    fontSize: 10,
-    backgroundColor: "#191970",
+    borderRadius: 5,
+    fontWeight: 300,
   },
   infoButton: {
-    backgroundColor: "#191970",
-    borderRadius: 15,
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 5,
-    borderWidth: 2,
-    borderColor: "#FFF",
+    backgroundColor: "#FFF",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    borderColor: "#01949a",
+    borderWidth: 1,
   },
   infoButtonText: {
-    color: "#FFF",
-    fontSize: 10,
-    // fontWeight: "bold",
-    // fontStyle: "italic",
+    color: "#01949a",
+    fontWeight: 400,
+    fontSize: 12,
+  },
+  resetButton: {
+    backgroundColor: "#FFF",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    borderColor: "#9a0119",
+    borderWidth: 1,
+  },
+  resetButtonText: {
+    color: "#9a0119",
+    fontWeight: 400,
+    fontSize: 12,
   },
 });
