@@ -1,4 +1,6 @@
 created expo app using: npx create-expo-app todo
 starting app using: npx expo start
+for async storage: npm install @react-native-async-storage/async-storage
+
 color scheme: #01949a #191970 bg: #E8EAED #F5F5F5
 #FFDADA #B0C4DE
